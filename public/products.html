@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products Management - Invoice System</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .products-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .section h2 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+      }
+      .products-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+      .product-card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 6px;
+        background: #f9f9f9;
+      }
+      .product-card h3 {
+        margin: 0 0 10px 0;
+        color: #007bff;
+      }
+      .product-info {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+      .product-prices {
+        background: white;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+      .price-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 5px 0;
+        font-size: 13px;
+      }
+      .product-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .btn-edit,
+      .btn-delete {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .btn-edit {
+        background: #28a745;
+        color: white;
+      }
+      .btn-edit:hover {
+        background: #218838;
+      }
+      .btn-delete {
+        background: #dc3545;
+        color: white;
+      }
+      .btn-delete:hover {
+        background: #c82333;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-content {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .modal-header h2 {
+        margin: 0;
+      }
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: #999;
+      }
+      .close-btn:hover {
+        color: #000;
+      }
+      .success-message {
+        background: #d4edda;
+        color: #155724;
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        display: none;
+      }
+      .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        display: none;
+      }
+      .no-products {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <a href="/">Create Invoice</a>
+      <a href="/invoices">View Invoices</a>
+      <a href="/products">Manage Products</a>
+      <a href="/report">📊 Report</a>
+    </nav>
+    <div class="products-container">
+      <!-- Add Product Section -->
+      <div class="section">
+        <h2>Add New Product</h2>
+        <div class="success-message" id="successMsg"></div>
+        <div class="error-message" id="errorMsg"></div>
+
+        <form id="productForm">
+          <div class="form-group">
+            <label>SKU (Product Code)</label>
+            <input type="text" id="sku" placeholder="e.g., SKU001" required />
+          </div>
+
+          <div class="form-group">
+            <label>Product Name</label>
+            <input
+              type="text"
+              id="productName"
+              placeholder="e.g., Widget A"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea
+              id="description"
+              placeholder="Product description (optional)"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div
+            style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px"
+          >
+            <div class="form-group">
+              <label>Unit Price ($)</label>
+              <input
+                type="number"
+                id="unitPrice"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+                value="0"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Box Price ($)</label>
+              <input
+                type="number"
+                id="boxPrice"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>CTN Price ($)</label>
+              <input
+                type="number"
+                id="ctnPrice"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Add Product</button>
+          <button type="reset" class="btn btn-secondary">Clear</button>
+        </form>
+      </div>
+
+      <!-- Products List Section -->
+      <div class="section">
+        <h2>Product Inventory</h2>
+        <div
+          id="productsList"
+          class="products-list"
+          style="display: flex; justify-content: center; align-items: center"
+        >
+          <div class="no-products">Loading products...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Edit Product</h2>
+          <button type="button" class="close-btn" onclick="closeEditModal()">
+            &times;
+          </button>
+        </div>
+
+        <form id="editForm">
+          <input type="hidden" id="editProductId" />
+
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" id="editProductName" required />
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="editDescription" rows="3"></textarea>
+          </div>
+
+          <div
+            style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px"
+          >
+            <div class="form-group">
+              <label>Unit Price ($)</label>
+              <input
+                type="number"
+                id="editUnitPrice"
+                min="0"
+                step="0.01"
+                value="0"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Box Price ($)</label>
+              <input
+                type="number"
+                id="editBoxPrice"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>CTN Price ($)</label>
+              <input
+                type="number"
+                id="editCtnPrice"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Update Product</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/products.js"></script>
+  </body>
+</html>
