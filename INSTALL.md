@@ -7,20 +7,26 @@ This guide covers setup for Windows, Mac, and Linux. **No database server requir
 ## Prerequisites Check
 
 ### Windows
+
 **Check Node.js:**
+
 ```powershell
 node --version
 npm --version
 ```
+
 Should show version numbers (e.g., v18.0.0)
 
 **Check MySQL:**
+
 ```powershell
 mysql --version
 ```
+
 If not found, MySQL is not in PATH. Check Services for MySQL running.
 
 ### Mac/Linux
+
 ```bash
 node --version
 npm --version
@@ -37,6 +43,7 @@ If any are missing, install Node.js from: https://nodejs.org/
 ### Install Node.js
 
 #### Windows
+
 1. Download from: https://nodejs.org/ (LTS version)
 2. Run installer
 3. Click Next through all steps
@@ -44,12 +51,14 @@ If any are missing, install Node.js from: https://nodejs.org/
 5. Complete
 
 **Verify:**
+
 ```powershell
 node --version
 npm --version
 ```
 
 #### Mac
+
 ```bash
 # Using Homebrew
 brew install node
@@ -58,12 +67,14 @@ brew install node
 ```
 
 **Verify:**
+
 ```bash
 node --version
 npm --version
 ```
 
 #### Linux
+
 ```bash
 # Ubuntu/Debian
 sudo apt install nodejs npm
@@ -73,6 +84,7 @@ sudo yum install nodejs npm
 ```
 
 **Verify:**
+
 ```bash
 node --version
 npm --version
@@ -85,20 +97,24 @@ npm --version
 ### Step 1: Open Terminal/PowerShell
 
 **Windows PowerShell:**
+
 - Right-click Start Menu
 - Click Windows PowerShell (Admin)
 
 **Mac/Linux Terminal:**
+
 - Press Cmd+Space, type "terminal"
 
 ### Step 2: Navigate to Project
 
 **Windows:**
+
 ```powershell
 cd C:\Users\namk\Desktop\Recept
 ```
 
 **Mac/Linux:**
+
 ```bash
 cd ~/Desktop/Recept
 ```
@@ -112,6 +128,7 @@ npm install
 This will create a `node_modules` folder with all packages.
 
 **What's being installed:**
+
 - **express** - Web framework
 - **mysql2** - Database driver
 - **body-parser** - Request parsing
@@ -127,15 +144,16 @@ Edit `config/db.js` to match your MySQL setup:
 
 ```javascript
 const pool = mysql.createPool({
-  host: 'localhost',      // Your host
-  user: 'root',           // Your username
-  password: '',           // Your password (empty if none)
-  database: 'invoice_db', // Database name
+  host: "localhost", // Your host
+  user: "root", // Your username
+  password: "", // Your password (empty if none)
+  database: "invoice_db", // Database name
   // ...
 });
 ```
 
 **Examples:**
+
 ```javascript
 // No password
 password: '',
@@ -161,6 +179,7 @@ npm start
 ```
 
 Output should be:
+
 ```
 ✓ Database connected successfully!
 ✓ Server running at http://localhost:3000
@@ -185,42 +204,52 @@ Should see the invoice form.
 ## Troubleshooting
 
 ### "npm: command not found"
+
 - Node.js not installed
 - Install from https://nodejs.org/
 - Restart terminal after install
 
 ### "Cannot find module 'express'"
+
 ```bash
 npm install
 ```
 
 ### "EADDRINUSE: address already in use :::3000"
+
 Another app is using port 3000:
+
 ```bash
 # Change PORT in server.js
 const PORT = 4000; // Use 4000 instead
 ```
 
 ### "Error: connect ECONNREFUSED 127.0.0.1:3306"
+
 - MySQL not running
 - Windows: Start from Services or MySQL shell
 - Mac: `brew services start mysql`
 - Linux: `sudo systemctl start mysql`
 
 ### "Error: Access denied for user 'root'@'localhost'"
+
 - Check password in `config/db.js`
 - Test MySQL connection:
+
 ```bash
 mysql -u root -p
 ```
 
 ### "Error: Unknown database 'invoice_db'"
+
 - Run database setup SQL
 - Or: `mysql -u root -p < database.sql`
 - Or: Use database.sql file in MySQL Workbench
 
 ### "Cannot find module 'nodemon'"
+
 This only happens with `npm run dev`:
+
 ```bash
 npm install --save-dev nodemon
 # Or just use: npm start
@@ -240,13 +269,15 @@ cp .env.example .env
 ```
 
 Then in `server.js`, load environment:
+
 ```javascript
-require('dotenv').config();
+require("dotenv").config();
 const PORT = process.env.PORT || 3000;
-const DB_HOST = process.env.DB_HOST || 'localhost';
+const DB_HOST = process.env.DB_HOST || "localhost";
 ```
 
 Install dotenv:
+
 ```bash
 npm install dotenv
 ```
@@ -270,11 +301,14 @@ chmod +x setup.sh
 ## Firewall Issues
 
 ### Windows
+
 Windows Firewall may block Node.js:
+
 - When prompted: Allow access
 - Or add rule manually in Firewall settings
 
 ### Mac
+
 ```bash
 # Check if blocked
 sudo lsof -i :3000
@@ -284,6 +318,7 @@ sudo lsof -i :3000
 ```
 
 ### Linux
+
 ```bash
 # Open port (Ubuntu)
 sudo ufw allow 3000
@@ -297,16 +332,20 @@ sudo ufw status
 ## Verify Everything Works
 
 ### Test 1: Server Running
+
 ```
 http://localhost:3000
 ```
+
 Should show form.
 
 ### Test 2: Database Working
+
 Create an invoice and save it.
 Check should appear in "View Invoices" page.
 
 ### Test 3: Print Working
+
 Click "Print or Save as PDF".
 Should open print dialog.
 
@@ -342,6 +381,7 @@ mysql -u root -p < drop_database.sql
 ## Support
 
 If stuck:
+
 1. Check error message carefully
 2. Google the error message
 3. Verify MySQL is running
